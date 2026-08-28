@@ -1,2 +1,2 @@
-# red_sensores_iot
-Proyecto base del curso de estructura de datos.
+# Proyecto Integrador Red de Sensores IoT
+>Proyecto base del curso de estructura de datos.
