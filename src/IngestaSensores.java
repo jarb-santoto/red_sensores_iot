@@ -32,7 +32,7 @@ public class IngestaSensores {
     public static void main(String[] args) throws IOException {
 
         // Nombre del archivo que contiene las lecturas de los sensores.
-        String archivo = "lecturas.csv";
+        String archivo = "data/lecturas.csv";
 
         // BufferedReader permite leer el archivo una linea a la vez.
         BufferedReader br = new BufferedReader(new FileReader(archivo));
