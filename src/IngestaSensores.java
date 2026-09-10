@@ -1,108 +1,91 @@
 /* ============================================================
-   RED DE MONITOREO AMBIENTAL URBANO - MODULO DE INGESTA
-   Version 0.1 - "funciona en mi maquina"
+   PLATAFORMA DE MONITOREO AMBIENTAL URBANO
+   IngestaSensores - VERSION 0.2
 
-   Este programa lee el archivo lecturas.csv con los datos
-   crudos de las estaciones de sensores y produce un reporte
-   de calidad del aire.
+   Novedades frente a la Semana 1:
+   - La logica esta en metodos, no en un main gigante.
+   - Las lecturas ya no se imprimen y se olvidan: se GUARDAN.
+   - La validacion vive dentro de LecturaSensor.esValida().
 
-   NO MODIFIQUES ESTE ARCHIVO ANTES DE LA FASE 0.
-   Primero se predice, despues se ejecuta.
+   Este archivo esta terminado. Los que estan incompletos son
+   RepositorioLecturas y AnalizadorMatriz.
    ============================================================ */
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-/**
- * Lee mediciones ambientales desde un archivo CSV y genera un reporte.
- *
- * <p>El programa calcula promedios de temperatura, humedad y PM2.5.
- * Tambien identifica la estacion que tiene la lectura de PM2.5 mas alta.</p>
- */
 public class IngestaSensores {
 
-    /**
-     * Punto de entrada del programa.
-     *
-     * @param args argumentos recibidos desde la linea de comandos; este
-     *             programa no necesita argumentos
-     * @throws IOException si ocurre un problema al abrir, leer o cerrar el CSV
-     */
+    private static final String ARCHIVO = "lecturas_ampliadas.csv";
+    private static final int CAMPOS_ESPERADOS = 5;
+
+    private static int descartadasPorFormato = 0;
+    private static int descartadasPorRango = 0;
+
     public static void main(String[] args) throws IOException {
-        String linea =
-                "EST-001,2026-09-07 08:00,aaa,75.2,32.4";
 
-        String[] campos = separarCampos(linea);
+        RepositorioLecturas repositorio = new RepositorioLecturas();
+        AnalizadorMatriz analizador = new AnalizadorMatriz();
 
-        if (!tieneNumeroCorrectoDeCampos(campos)) {
-            System.out.println("Registro inválido");
-            return;
+        cargarArchivo(repositorio, analizador);
+
+        System.out.println();
+        System.out.println("=== INGESTA ===");
+        System.out.println("Lecturas almacenadas:      " + repositorio.tamano());
+        System.out.println("Descartadas por formato:   " + descartadasPorFormato);
+        System.out.println("Descartadas por rango:     " + descartadasPorRango);
+        System.out.println();
+        System.out.println("PM2.5 promedio (repositorio): " + repositorio.promedioPm25());
+        System.out.println();
+        System.out.println("=== PERFIL HORARIO DE LA CIUDAD ===");
+        for (int h = 0; h < 24; h++) {
+            System.out.printf("Hora %02d -> PM2.5 promedio: %.2f%n", h, analizador.promedioDeHora(h));
         }
-
-        LecturaSensor lectura = crearLectura(campos);
-
-        imprimirLectura(lectura);
     }
 
-    public static String[] separarCampos(String linea) {
-        return linea.split(",");
+    /**
+     * Lee el archivo linea por linea y alimenta el repositorio y la matriz.
+     */
+    private static void cargarArchivo(RepositorioLecturas repositorio,
+                                      AnalizadorMatriz analizador) throws IOException {
+        BufferedReader lector = new BufferedReader(new FileReader(ARCHIVO));
+        lector.readLine(); // encabezado
+
+        String linea;
+        while ((linea = lector.readLine()) != null) {
+            LecturaSensor lectura = construirLectura(linea);
+            if (lectura == null) {
+                continue;
+            }
+            if (!lectura.esValida()) {
+                descartadasPorRango++;
+                continue;
+            }
+            repositorio.agregar(lectura);
+            analizador.registrar(lectura);
+        }
+        lector.close();
     }
 
-    public static boolean tieneNumeroCorrectoDeCampos(
-            String[] campos) {
-
-        return campos.length == 5;
-    }
-
-    public static LecturaSensor crearLectura(
-            String[] campos) {
-
-        String id = campos[0];
-        String fechaHora = campos[1];
-
-        double temperatura = convertirANumero(campos[2]);
-
-        double humedad =
-                Double.parseDouble(campos[3]);
-
-        double pm25 =
-                Double.parseDouble(campos[4]);
-
-        return new LecturaSensor(
-                id,
-                fechaHora,
-                temperatura,
-                humedad,
-                pm25
-        );
-    }
-
-    public static void imprimirLectura(
-            LecturaSensor lectura) {
-
-        System.out.println(
-                "Estación: " +
-                        lectura.getIdEstacion()
-        );
-
-        System.out.println(
-                "Temperatura: " +
-                        lectura.getTemperatura()
-        );
-    }
-
-    public static double convertirANumero(String texto) {
+    /**
+     * Convierte una linea del CSV en un objeto LecturaSensor.
+     * @return la lectura, o null si la linea esta mal formada
+     */
+    private static LecturaSensor construirLectura(String linea) {
+        String[] campos = linea.split(",");
+        if (campos.length != CAMPOS_ESPERADOS) {
+            descartadasPorFormato++;
+            return null;
+        }
         try {
-            return Double.parseDouble(texto);
+            double temperatura = Double.parseDouble(campos[2]);
+            double humedad = Double.parseDouble(campos[3]);
+            double pm25 = Double.parseDouble(campos[4]);
+            return new LecturaSensor(campos[0], campos[1], temperatura, humedad, pm25);
         } catch (NumberFormatException e) {
-            System.out.println(
-                    "Error: '" +
-                            texto +
-                            "' no es un número válido"
-            );
-            return Double.NaN;
+            descartadasPorFormato++;
+            return null;
         }
     }
-
 }
