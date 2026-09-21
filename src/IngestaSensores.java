@@ -1,14 +1,11 @@
 /* ============================================================
    PLATAFORMA DE MONITOREO AMBIENTAL URBANO
-   IngestaSensores - VERSION 0.2
+   IngestaSensores - SEMANA 3
 
-   Novedades frente a la Semana 1:
-   - La logica esta en metodos, no en un main gigante.
-   - Las lecturas ya no se imprimen y se olvidan: se GUARDAN.
-   - La validacion vive dentro de LecturaSensor.esValida().
+   Este es el ÚNICO punto de entrada de todo el proyecto.
 
-   Este archivo esta terminado. Los que estan incompletos son
-   RepositorioLecturas y AnalizadorMatriz.
+   Las semanas no crean aplicaciones independientes:
+   cada semana agrega capacidades a esta misma plataforma.
    ============================================================ */
 
 import java.io.BufferedReader;
@@ -30,61 +27,132 @@ public class IngestaSensores {
 
         cargarArchivo(repositorio, analizador);
 
+        imprimirResumenIngesta(repositorio);
+        imprimirPerfilHorario(analizador);
+
+        // =====================================================
+        // SEMANA 3 - BÚSQUEDA Y ANÁLISIS DE EFICIENCIA
+        // =====================================================
+        //
+        // BancoDePruebas NO tiene main.
+        // Los experimentos son parte de esta misma aplicación.
+        //
+        ejecutarExperimentosSemanaTres();
+    }
+
+    /**
+     * Ejecuta las pruebas de la Semana 3 desde el único main
+     * del proyecto.
+     */
+    private static void ejecutarExperimentosSemanaTres() {
+        System.out.println();
+        System.out.println("====================================================");
+        System.out.println("       SEMANA 3 - BUSQUEDA Y EFICIENCIA");
+        System.out.println("====================================================");
+        System.out.println();
+
+        BancoDePruebas.experimentoUno();
+        BancoDePruebas.experimentoDos();
+        BancoDePruebas.experimentoTres();
+        BancoDePruebas.experimentoCuatro();
+    }
+
+    private static void imprimirResumenIngesta(
+            RepositorioLecturas repositorio) {
+
         System.out.println();
         System.out.println("=== INGESTA ===");
-        System.out.println("Lecturas almacenadas:      " + repositorio.tamano());
-        System.out.println("Descartadas por formato:   " + descartadasPorFormato);
-        System.out.println("Descartadas por rango:     " + descartadasPorRango);
+        System.out.println(
+                "Lecturas almacenadas:      " + repositorio.tamano());
+        System.out.println(
+                "Descartadas por formato:   " + descartadasPorFormato);
+        System.out.println(
+                "Descartadas por rango:     " + descartadasPorRango);
         System.out.println();
-        System.out.println("PM2.5 promedio (repositorio): " + repositorio.promedioPm25());
+        System.out.println(
+                "PM2.5 promedio (repositorio): "
+                + repositorio.promedioPm25());
+    }
+
+    private static void imprimirPerfilHorario(
+            AnalizadorMatriz analizador) {
+
         System.out.println();
         System.out.println("=== PERFIL HORARIO DE LA CIUDAD ===");
+
         for (int h = 0; h < 24; h++) {
-            System.out.printf("Hora %02d -> PM2.5 promedio: %.2f%n", h, analizador.promedioDeHora(h));
+            System.out.printf(
+                    "Hora %02d -> PM2.5 promedio: %.2f%n",
+                    h,
+                    analizador.promedioDeHora(h));
         }
     }
 
     /**
-     * Lee el archivo linea por linea y alimenta el repositorio y la matriz.
+     * Lee el archivo línea por línea y alimenta el repositorio y la matriz.
      */
-    private static void cargarArchivo(RepositorioLecturas repositorio,
-                                      AnalizadorMatriz analizador) throws IOException {
-        BufferedReader lector = new BufferedReader(new FileReader(ARCHIVO));
-        lector.readLine(); // encabezado
+    private static void cargarArchivo(
+            RepositorioLecturas repositorio,
+            AnalizadorMatriz analizador) throws IOException {
 
-        String linea;
-        while ((linea = lector.readLine()) != null) {
-            LecturaSensor lectura = construirLectura(linea);
-            if (lectura == null) {
-                continue;
+        try (BufferedReader lector =
+                     new BufferedReader(new FileReader(ARCHIVO))) {
+
+            lector.readLine(); // encabezado
+
+            String linea;
+
+            while ((linea = lector.readLine()) != null) {
+
+                LecturaSensor lectura = construirLectura(linea);
+
+                if (lectura == null) {
+                    continue;
+                }
+
+                if (!lectura.esValida()) {
+                    descartadasPorRango++;
+                    continue;
+                }
+
+                if (!repositorio.agregar(lectura)) {
+                    System.err.println(
+                            "ADVERTENCIA: no se pudo almacenar "
+                            + lectura.getIdSensor());
+                    continue;
+                }
+
+                analizador.registrar(lectura);
             }
-            if (!lectura.esValida()) {
-                descartadasPorRango++;
-                continue;
-            }
-            if (!repositorio.agregar(lectura)) {
-                System.err.println("ADVERTENCIA: no se pudo almacenar " + lectura.getIdSensor());
-            }
-            analizador.registrar(lectura);
         }
-        lector.close();
     }
 
     /**
-     * Convierte una linea del CSV en un objeto LecturaSensor.
-     * @return la lectura, o null si la linea esta mal formada
+     * Convierte una línea del CSV en un objeto LecturaSensor.
+     *
+     * @return la lectura, o null si la línea está mal formada
      */
     private static LecturaSensor construirLectura(String linea) {
+
         String[] campos = linea.split(",");
+
         if (campos.length != CAMPOS_ESPERADOS) {
             descartadasPorFormato++;
             return null;
         }
+
         try {
             double temperatura = Double.parseDouble(campos[2]);
             double humedad = Double.parseDouble(campos[3]);
             double pm25 = Double.parseDouble(campos[4]);
-            return new LecturaSensor(campos[0], campos[1], temperatura, humedad, pm25);
+
+            return new LecturaSensor(
+                    campos[0],
+                    campos[1],
+                    temperatura,
+                    humedad,
+                    pm25);
+
         } catch (NumberFormatException e) {
             descartadasPorFormato++;
             return null;

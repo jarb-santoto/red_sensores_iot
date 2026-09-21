@@ -1,36 +1,70 @@
-# Proyecto Integrador Red de Sensores IoT
->Proyecto base del curso de estructura de datos.
+# Proyecto Integrador — Semana 3
 
-## Modulo de ingesta
+## Plataforma de Monitoreo Ambiental Urbano
 
-`src/IngestaSensores.java` lee el archivo `data/lecturas.csv` y muestra:
+Esta versión integra las capacidades desarrolladas durante las semanas anteriores y agrega la búsqueda lineal y binaria.
 
-- Cada lectura con su estacion, fecha, temperatura, humedad y PM2.5.
-- La cantidad de registros procesados.
-- El promedio de temperatura, humedad y PM2.5.
-- La estacion con el valor mas alto de PM2.5.
+### Regla arquitectónica
 
-### Conceptos principales
-
-- `BufferedReader` lee el archivo una linea a la vez.
-- `split(",")` separa las columnas del CSV.
-- `Double.parseDouble` convierte texto numerico a `double`.
-- Los acumuladores suman los valores para calcular promedios.
-- La condicion `if` compara cada PM2.5 con el maximo encontrado.
-
-### Ejecucion
-
-Desde la carpeta `src`, con un JDK instalado:
+Existe **un único `main` para todo el proyecto**:
 
 ```text
-javac IngestaSensores.java
+IngestaSensores.java
+```
+
+`BancoDePruebas.java` no contiene `main`; sus métodos son invocados desde `IngestaSensores`.
+
+## Archivos
+
+```text
+.
+├── IngestaSensores.java
+├── LecturaSensor.java
+├── RepositorioLecturas.java
+├── AnalizadorMatriz.java
+├── BuscadorLecturas.java
+├── BancoDePruebas.java
+├── GeneradorDatos.java
+├── README.md
+├── docs/
+│   └── decisiones.md
+└── data/
+    └── lecturas_ampliadas.csv   ← requerido para ejecutar la ingesta
+```
+
+## Compilación
+
+Desde la raíz del proyecto:
+
+```bash
+javac *.java
+```
+
+## Ejecución
+
+```bash
 java IngestaSensores
 ```
 
-El programa espera encontrar `lecturas.csv` en la carpeta desde la que se
-ejecuta. Por ejemplo, copia el CSV a `src` o ejecuta el programa desde `data`
-ajustando la ruta del archivo en el codigo.
+El archivo:
 
-> Nota: el CSV de ejemplo contiene valores vacios y textos como `ERR`. El
-> programa actual intenta convertir todos los valores de medicion a numero,
-> por lo que esas filas pueden producir un error durante la ejecucion.
+```text
+data/lecturas_ampliadas.csv
+```
+
+debe existir para ejecutar la aplicación completa.
+
+## Experimentos de Semana 3
+
+El único `main` ejecuta:
+
+1. Búsqueda lineal en diferentes tamaños.
+2. Comparación de `String`.
+3. Búsqueda lineal vs. binaria por timestamp.
+4. Búsqueda binaria por PM2.5 y análisis de su precondición.
+
+## Idea central
+
+La aplicación no se reinicia conceptualmente cada semana.
+
+Cada semana agrega una nueva capacidad al mismo proyecto integrador.

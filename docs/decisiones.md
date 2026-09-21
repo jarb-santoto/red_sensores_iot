@@ -1,26 +1,68 @@
-# Decisiones de Diseno - Bitacora Tecnica
+# Decisiones de diseño — Semana 3
 
-Formato: cada entrada con fecha, decision, alternativas consideradas, justificacion.
+## 1. Punto de entrada
 
-## S1 - De codigo fragil a confiable - 2026-08-26
+El proyecto mantiene un único punto de entrada:
 
-### Decision 1: Crear clase LecturaSensor
-- **Alternativas:** mantener 5 variables sueltas vs crear clase.
-- **Elegida:** clase con atributos privados, constantes de rangos.
-- **Justificacion:** encapsulamiento (numeral 1.2), reutilizable 12 semanas, firma de metodos pasa de 5 params a 1. Evita error de orden de parametros.
+```text
+IngestaSensores.main()
+```
 
-### Decision 2: Estrategia ante fila invalida
-- **Alternativas:** A) descartar solo campo malo B) descartar fila completa.
-- **Elegida:** B) fila completa.
-- **Justificacion:** principio conservador para reporte oficial. Si un canal falla (-999), no confiamos en sincronia de los otros dos. Preferimos perdida de datos a contaminacion silenciosa. Registrado en descartes.csv para auditoria.
+No se crean aplicaciones independientes por semana.
 
-### Decision 3: Manejo de excepciones
-- **Alternativas:** catch generico Exception vs especificos.
-- **Elegida:** catch especifico NumberFormatException y ArrayIndexOutOfBoundsException + validacion fisica.
-- **Justificacion:** catch vacio o generico esconde causa. Necesitamos trazabilidad: cuantos, por que motivo.
+`BancoDePruebas` es una clase auxiliar y no contiene `main`.
 
-### Decision 4: Constantes vs numeros magicos
-- **Elegida:** TEMP_MIN=-40, TEMP_MAX=60, HUM_MIN=0, HUM_MAX=100, PM_MIN=0, CODIGO_DESCONECTADO=-999
-- **Justificacion:** si cambian umbrales de la norma ambiental, se cambia en un solo lugar.
+## 2. Búsqueda por timestamp
 
-## S2 - [Pendiente]
+Se utilizan dos estrategias:
+
+- Búsqueda lineal: no requiere ordenamiento.
+- Búsqueda binaria: requiere que el arreglo esté ordenado por timestamp.
+
+Los datos sintéticos de `GeneradorDatos` se generan en orden cronológico, por lo que la búsqueda binaria por timestamp cumple su precondición.
+
+## 3. Búsqueda por PM2.5
+
+No se asume que los datos estén ordenados por PM2.5.
+
+Por tanto, la búsqueda binaria por PM2.5 se conserva como experimento para demostrar el efecto de una precondición incumplida.
+
+## 4. Comparación de String
+
+Los identificadores de estación se comparan mediante:
+
+```java
+equals()
+```
+
+y no mediante:
+
+```java
+==
+```
+
+porque se necesita comparar contenido.
+
+## 5. Medición
+
+La comparación principal entre algoritmos utiliza el número de comparaciones.
+
+El tiempo en milisegundos se conserva como evidencia experimental, pero no es la única medida utilizada.
+
+## 6. Evolución del proyecto
+
+La Semana 3 agrega una nueva capacidad a la misma plataforma:
+
+```text
+Sensores
+   ↓
+Ingesta
+   ↓
+Repositorio
+   ↓
+Búsqueda
+   ↓
+Medición de eficiencia
+```
+
+La Semana 4 podrá extender esta misma arquitectura para estudiar ordenamiento.
