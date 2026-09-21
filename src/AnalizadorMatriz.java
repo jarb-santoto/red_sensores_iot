@@ -16,9 +16,11 @@ public class AnalizadorMatriz {
     private static final int NUM_HORAS = 24;
 
     private double[][] pm25PorEstacionHora;
+    private boolean[][] hayDato;
 
     public AnalizadorMatriz() {
         this.pm25PorEstacionHora = new double[NUM_ESTACIONES][NUM_HORAS];
+        this.hayDato = new boolean[NUM_ESTACIONES][NUM_HORAS];
     }
 
     /**
@@ -36,6 +38,7 @@ public class AnalizadorMatriz {
         int fila = indiceDeEstacion(lectura.getIdSensor());
         int columna = lectura.getHora();
         pm25PorEstacionHora[fila][columna] = lectura.getPm25();
+        hayDato[fila][columna] = true;
     }
 
     /**
@@ -47,10 +50,15 @@ public class AnalizadorMatriz {
      */
     public double promedioDeHora(int hora) {
         double suma = 0;
+        int estacionesQueReportaron = 0;
         for (int fila = 0; fila < NUM_ESTACIONES; fila++) {
-            suma = suma + pm25PorEstacionHora[fila][hora];
+            if (hayDato[fila][hora]) {
+                suma += pm25PorEstacionHora[fila][hora];
+                estacionesQueReportaron++;
+            }
         }
-        return suma / NUM_ESTACIONES;
+        if (estacionesQueReportaron == 0) return 0;   // o Double.NaN, según criterio
+        return suma / estacionesQueReportaron;
     }
 
     /**
@@ -58,7 +66,19 @@ public class AnalizadorMatriz {
      * TODO 2: implementar, con el mismo cuidado del TODO 1.
      */
     public double promedioDeEstacion(int fila) {
-        return 0;
+        if (fila < 0 || fila >= NUM_ESTACIONES) {
+            throw new IndexOutOfBoundsException("Estación inválida: " + fila);
+        }
+        double suma = 0;
+        int horasQueReportaron = 0;
+        for (int h = 0; h < NUM_HORAS; h++) {
+            if (hayDato[fila][h]) {
+                suma += pm25PorEstacionHora[fila][h];
+                horasQueReportaron++;
+            }
+        }
+        if (horasQueReportaron == 0) return 0;
+        return suma / horasQueReportaron;
     }
 
     /**
@@ -66,7 +86,16 @@ public class AnalizadorMatriz {
      * TODO 3: implementar.
      */
     public int horaMasContaminada() {
-        return -1;
+        int mejorHora = -1;
+        double mejorPromedio = -1;
+        for (int h = 0; h < NUM_HORAS; h++) {
+            double promedio = promedioDeHora(h);
+            if (promedio > mejorPromedio) {
+                mejorPromedio = promedio;
+                mejorHora = h;
+            }
+        }
+        return mejorHora;
     }
 
     /**

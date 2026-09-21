@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class IngestaSensores {
 
-    private static final String ARCHIVO = "lecturas_ampliadas.csv";
+    private static final String ARCHIVO = "data/lecturas_ampliadas.csv";
     private static final int CAMPOS_ESPERADOS = 5;
 
     private static int descartadasPorFormato = 0;
@@ -62,7 +62,9 @@ public class IngestaSensores {
                 descartadasPorRango++;
                 continue;
             }
-            repositorio.agregar(lectura);
+            if (!repositorio.agregar(lectura)) {
+                System.err.println("ADVERTENCIA: no se pudo almacenar " + lectura.getIdSensor());
+            }
             analizador.registrar(lectura);
         }
         lector.close();

@@ -33,7 +33,7 @@ public class RepositorioLecturas {
      */
     public boolean agregar(LecturaSensor lectura) {
         if (cantidad == lecturas.length) {
-            return false;
+            redimensionar();
         }
         lecturas[cantidad] = lectura;
         cantidad++;
@@ -44,6 +44,10 @@ public class RepositorioLecturas {
      * Devuelve la lectura que esta en la posicion indicada.
      */
     public LecturaSensor obtener(int posicion) {
+        if (posicion < 0 ||
+                posicion >= cantidad) {
+            return null;
+        }
         return lecturas[posicion];
     }
 
@@ -60,7 +64,16 @@ public class RepositorioLecturas {
      * VERSION INGENUA: revisala con cuidado antes de confiar en ella.
      */
     public void eliminar(int posicion) {
-        lecturas[posicion] = null;
+        if (posicion < 0 || posicion >= cantidad) {
+            throw new IndexOutOfBoundsException("Posición inválida: " + posicion);
+        }
+        // Correr todo una posición a la izquierda
+        for (int i = posicion; i < cantidad - 1; i++) {
+            lecturas[i] = lecturas[i + 1];
+        }
+        // Anular la última posición ocupada (evita el "duplicado fantasma")
+        lecturas[cantidad - 1] = null;
+        cantidad--;
     }
 
     /**
@@ -68,6 +81,12 @@ public class RepositorioLecturas {
      * TODO 1: implementar. Devolver null si no existe.
      */
     public LecturaSensor buscarPorEstacion(String idSensor) {
+        for (int i = 0; i < cantidad; i++) {
+            if (lecturas[i] != null
+                    && lecturas[i].getIdSensor().equals(idSensor)) {
+                return lecturas[i];
+            }
+        }
         return null;
     }
 
@@ -76,6 +95,14 @@ public class RepositorioLecturas {
      * TODO 2: implementar, verificando que la posicion sea valida.
      */
     public void actualizar(int posicion, LecturaSensor nueva) {
+        if (posicion < 0 || posicion >= cantidad) {
+            throw new IndexOutOfBoundsException(
+                    "Posición inválida: " + posicion + " (rango 0.." + (cantidad - 1) + ")");
+        }
+        if (nueva == null) {
+            throw new IllegalArgumentException("La lectura no puede ser null");
+        }
+        lecturas[posicion] = nueva;
     }
 
     /**
@@ -88,6 +115,12 @@ public class RepositorioLecturas {
      * uno nuevo mas grande y copiar. Piensa cuantas copias implica eso.
      */
     private void redimensionar() {
+        LecturaSensor[] nuevo = new LecturaSensor[lecturas.length * 2];
+
+        for(int i = 0; i < cantidad; i++) {
+            nuevo[i] = lecturas[i];
+        }
+        lecturas = nuevo;
     }
 
     /**
