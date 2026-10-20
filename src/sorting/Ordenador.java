@@ -13,6 +13,10 @@
    la red, no con datos raros.
    ============================================================ */
 
+package sorting;
+
+import model.LecturaSensor;
+
 public class Ordenador {
 
     private static long comparaciones = 0;

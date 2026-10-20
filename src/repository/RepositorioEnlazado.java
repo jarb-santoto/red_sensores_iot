@@ -3,11 +3,16 @@
    RepositorioEnlazado - VERSION CORREGIDA
 
    Implementa la interfaz Repositorio usando una lista enlazada.
-   Se corregieron los defectos señalados en la guía:
+   Se corrigieron los defectos señalados en la guía:
    * agregarAlFinal usa el atributo 'ultimo' para evitar recorrer toda la lista.
    * eliminar maneja correctamente los bordes (posicion 0, último) y
      mantiene la cadena sin perder nodos.
    ============================================================ */
+
+package repository;
+
+import model.LecturaSensor;
+import model.Nodo;
 
 public class RepositorioEnlazado implements Repositorio {
 

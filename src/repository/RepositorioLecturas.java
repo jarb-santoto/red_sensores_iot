@@ -13,6 +13,10 @@
    que miente antes de arreglarla.
    ============================================================ */
 
+package repository;
+
+import model.LecturaSensor;
+
 public class RepositorioLecturas {
 
     private static final int CAPACIDAD_INICIAL = 10;

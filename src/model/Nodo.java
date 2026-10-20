@@ -6,6 +6,8 @@
    direccion de la siguiente caja.
    ============================================================ */
 
+package model;
+
 public class Nodo {
 
     private LecturaSensor dato;

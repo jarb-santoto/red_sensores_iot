@@ -8,9 +8,16 @@
    cada semana agrega capacidades a esta misma plataforma.
    ============================================================ */
 
+package ingest;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
+import model.LecturaSensor;
+import repository.RepositorioLecturas;
+import analysis.AnalizadorMatriz;
+import experiment.BancoDePruebas;
 
 public class IngestaSensores {
 

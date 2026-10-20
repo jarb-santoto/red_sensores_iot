@@ -10,6 +10,10 @@
    columnas = horas      (0..23)
    ============================================================ */
 
+package analysis;
+
+import model.LecturaSensor;
+
 public class AnalizadorMatriz {
 
     private static final int NUM_ESTACIONES = 9;

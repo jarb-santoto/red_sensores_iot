@@ -14,7 +14,10 @@
    hacia atras en el tiempo. Recuerda ese detalle. Va a importar.
    ============================================================ */
 
+package generator;
+
 import java.util.Random;
+import model.LecturaSensor;
 
 public class GeneradorDatos {
 

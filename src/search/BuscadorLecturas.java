@@ -9,6 +9,10 @@
    última búsqueda ejecutada.
    ============================================================ */
 
+package search;
+
+import model.LecturaSensor;
+
 public class BuscadorLecturas {
 
     /** Comparaciones de la última búsqueda ejecutada. */

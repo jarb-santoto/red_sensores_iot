@@ -10,6 +10,12 @@
        IngestaSensores.main()
    ============================================================ */
 
+package experiment;
+
+import model.LecturaSensor;
+import generator.GeneradorDatos;
+import search.BuscadorLecturas;
+
 public class BancoDePruebas {
 
     private static final int[] TAMANOS = {1_000, 100_000, 1_000_000};
@@ -116,7 +122,6 @@ public class BancoDePruebas {
         System.out.println(
                 "Lineal  -> posicion: " + posLineal
                 + ", comparaciones: " + compLineal);
-
         System.out.println(
                 "Binaria -> posicion: " + posBinaria
                 + ", comparaciones: " + compBinaria);

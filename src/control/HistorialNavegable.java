@@ -7,6 +7,10 @@
    navegación hacia atrás.
    ============================================================ */
 
+package control;
+
+import model.LecturaSensor;
+
 public class HistorialNavegable {
 
     /** Nodo doble: dato, siguiente y anterior. */

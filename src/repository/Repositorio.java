@@ -8,6 +8,10 @@
    de nodos.
    ============================================================ */
 
+package repository;
+
+import model.LecturaSensor;
+
 public interface Repositorio {
 
     /** Agrega una lectura al final. */

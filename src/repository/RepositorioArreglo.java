@@ -10,6 +10,10 @@
    puedas comparar el costo con el de la lista enlazada.
    ============================================================ */
 
+package repository;
+
+import model.LecturaSensor;
+
 public class RepositorioArreglo implements Repositorio {
 
     private static final int CAPACIDAD_INICIAL = 10;

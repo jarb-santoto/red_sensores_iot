@@ -10,6 +10,8 @@
    Estudiala antes de usarla. La vas a ver las doce semanas.
    ============================================================ */
 
+package model;
+
 public class LecturaSensor {
 
     // Rangos fisicos aceptables. Constantes, no numeros magicos.

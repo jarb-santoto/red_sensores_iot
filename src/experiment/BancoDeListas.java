@@ -6,6 +6,14 @@
    Ejecuta:  java BancoDeListas
    ============================================================ */
 
+package experiment;
+
+import model.LecturaSensor;
+import repository.Repositorio;
+import repository.RepositorioArreglo;
+import repository.RepositorioEnlazado;
+import generator.GeneradorDatos;
+
 public class BancoDeListas {
 
     public static void main(String[] args) {
