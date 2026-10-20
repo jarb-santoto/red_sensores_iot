@@ -2,7 +2,7 @@
 
 ## Visión general
 
-Este repositorio contiene la solución completa del proyecto integrado que se desarrolla a lo largo de **cinco semanas** del curso de Estructuras de Datos. Cada semana añade una capa de funcionalidad, manteniendo un único punto de entrada (`IngestaSensores.java`).  
+Este repositorio contiene la solución completa del proyecto integrado que se desarrolla a lo largo de **seis semanas** del curso de Estructuras de Datos. Cada semana añade una capa de funcionalidad, manteniendo un único punto de entrada (`IngestaSensores.java`).  
 
 | Semana | Tema | Principales clases añadidas |
 |--------|------|------------------------------|
@@ -11,6 +11,7 @@ Este repositorio contiene la solución completa del proyecto integrado que se de
 | 3 | Búsqueda (lineal y binaria) | `BuscadorLecturas`, `AnalizadorMatriz` |
 | 4 | Algoritmos de ordenamiento | `Ordenador`, `BancoDeOrdenamiento` |
 | 5 | Listas enlazadas y doblemente enlazadas | `Nodo`, `RepositorioEnlazado`, `HistorialNavegable`, `BancoDeListas` |
+| 6 | Pilas, Colas y Montículos | `PilaDeAcciones`, `ColaDeIngesta`, `ColaDeAlertas`, `Alerta`, `BancoDeFlujo` |
 
 ## Arquitectura y flujo
 
@@ -32,24 +33,29 @@ Este repositorio contiene la solución completa del proyecto integrado que se de
 5. **Listas enlazadas** (`RepositorioEnlazado`, `HistorialNavegable`):
    - Inserción/ eliminación en O(1) o O(n) según caso.
    - `HistorialNavegable` permite navegación hacia adelante y atrás con un cursor, usado por la UI de control.
+6. **Control de Flujo (Semana 6)**:
+   - **Pila de Acciones**: Gestiona el historial de operaciones del operador para permitir el "Deshacer" (LIFO).
+   - **Cola de Ingesta**: Buffer circular que recibe lecturas de la red para procesarlas secuencialmente sin perder datos (FIFO).
+   - **Cola de Alertas**: Gestión de prioridad mediante un **Montículo (Heap)**, asegurando que las alertas críticas se atiendan primero, con desempate por orden de llegada.
 
 ## Cómo compilar y ejecutar
 
 ```bash
 # Desde la raíz del proyecto
-javac -d out src/*.java test/*.java
+javac -d out src/**/*.java test/*.java
 
 # Ejecutar la aplicación principal (ingesta completa)
-java -cp out IngestaSensores
+java -cp out ingest.IngestaSensores
 ```
 
 > **Requisitos**: el archivo `data/lecturas_ampliadas.csv` debe estar presente.
 
 ## Ejecutar experimentos por semana
 
-- **Semana 3**: `java BancoDePruebas` (ejecuta los experimentos de búsqueda).
-- **Semana 4**: `java BancoDeOrdenamiento` (prueba los algoritmos de ordenamiento).
-- **Semana 5**: `java BancoDeListas` (compara arreglo vs lista enlazada y prueba la lista doble).
+- **Semana 3**: `java experiment.BancoDePruebas` (ejecuta los experimentos de búsqueda).
+- **Semana 4**: `java experiment.BancoDeOrdenamiento` (prueba los algoritmos de ordenamiento).
+- **Semana 5**: `java experiment.BancoDeListas` (compara arreglo vs lista enlazada y prueba la lista doble).
+- **Semana 6**: `java experiment.BancoDeFlujo` (prueba pila, cola circular y cola de prioridad).
 
 ## Tests
 
@@ -59,6 +65,7 @@ El proyecto incluye un conjunto completo de pruebas unitarias bajo `test/` que c
 - Algoritmos de ordenamiento y sus contadores.
 - Búsqueda lineal y binaria.
 - Navegación en la lista doble (`HistorialNavegable`).
+- Operaciones de Pila, Cola Circular y Montículo.
 
 Ejecutar todas las pruebas con JUnit:
 ```bash
@@ -73,78 +80,10 @@ java -jar lib/junit-platform-console-standalone-1.10.2.jar \
 - Implementación de **pivote aleatorio** en Quick‑Sort para evitar `StackOverflowError` con datos ya ordenados.
 - Añadido de un puntero `ultimo` en la lista enlazada para `agregarAlFinal` O(1).
 - Introducción de la lista doble (`HistorialNavegable`) para navegación bidireccional en la UI.
+- Uso de **aritmética de índices** para el Montículo, evitando el uso de nodos y referencias para optimizar el rendimiento.
+- Criterio de desempate en la Cola de Prioridad basado en el **orden de llegada** para garantizar equidad en alertas de misma severidad.
 
 ---
 
-**Autor**: José Alvaro Rodríguez Botero (Claude Fable 5) 
-**Fecha**: Oct 2026
-
-
-## Plataforma de Monitoreo Ambiental Urbano
-
-Esta versión integra las capacidades desarrolladas durante las semanas anteriores y agrega la búsqueda lineal y binaria.
-
-### Regla arquitectónica
-
-Existe **un único `main` para todo el proyecto**:
-
-```text
-IngestaSensores.java
-```
-
-`BancoDePruebas.java` no contiene `main`; sus métodos son invocados desde `IngestaSensores`.
-
-## Archivos
-
-```text
-.
-├── IngestaSensores.java
-├── LecturaSensor.java
-├── RepositorioLecturas.java
-├── AnalizadorMatriz.java
-├── BuscadorLecturas.java
-├── BancoDePruebas.java
-├── GeneradorDatos.java
-├── README.md
-├── docs/
-│   └── decisiones.md
-└── data/
-    └── lecturas_ampliadas.csv   ← requerido para ejecutar la ingesta
-```
-
-## Compilación
-
-Desde la raíz del proyecto:
-
-```bash
-javac *.java
-```
-
-## Ejecución
-
-```bash
-java IngestaSensores
-```
-
-El archivo:
-
-```text
-data/lecturas_ampliadas.csv
-```
-
-debe existir para ejecutar la aplicación completa.
-
-## Experimentos de Semana 3
-
-El único `main` ejecuta:
-
-1. Búsqueda lineal en diferentes tamaños.
-2. Comparación de `String`.
-3. Búsqueda lineal vs. binaria por timestamp.
-4. Búsqueda binaria por PM2.5 y análisis de su precondición.
-
-## Idea central
-
-La aplicación no se reinicia conceptualmente cada semana.
-
-Cada semana agrega una nueva capacidad al mismo proyecto integrador.
+**Autor**: José Alvaro Rodríguez Botero (Claude Fable 5) 
+**Fecha**: Oct 2026
