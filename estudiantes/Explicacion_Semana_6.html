@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bitácora de Aprendizaje · Semana 6</title>
+    <style>
+        :root{--ink:#172b4d;--muted:#5d6b82;--blue:#1769aa;--pale:#edf6ff;--border:#d8e2ee;--bg:#f4f7fb}
+        *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.58 system-ui,Segoe UI,Arial,sans-serif}
+        header{background:linear-gradient(120deg,#0b3157,#1769aa);color:white;padding:2rem max(1rem,calc((100vw - 1180px)/2))}header h1{font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.15;margin:.3rem 0 .7rem}header p{max-width:850px;margin:.3rem 0;color:#e9f3ff}
+        .layout{max-width:1180px;margin:1.4rem auto;padding:0 1rem;display:grid;grid-template-columns:235px minmax(0,1fr);gap:1.2rem;align-items:start}
+        nav{position:sticky;top:1rem;background:white;border:1px solid var(--border);border-radius:14px;padding:1rem}nav h2{font-size:1rem;margin:.2rem 0 .6rem}nav a{display:block;color:var(--blue);text-decoration:none;padding:.35rem .45rem;border-radius:6px;font-size:.92rem}nav a:hover{background:var(--pale)}
+        section{background:white;border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem;scroll-margin-top:1rem}h2{font-size:1.4rem;margin:.1rem 0 .65rem}h3{font-size:1.05rem;margin:.1rem 0 .4rem}p{margin:.45rem 0 .75rem}
+        .callout{background:var(--pale);border-left:4px solid var(--blue);padding:.75rem 1rem;border-radius:7px;margin:.8rem 0}
+        .feynman-box{background:#fffef0;border:1px solid #eee8aa;border-left:4px solid #ffd700;padding:1rem;border-radius:7px;margin:1rem 0;font-style:italic}
+        pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#10243d;color:#edf5ff;padding:1rem;border-radius:9px;overflow-x:auto;font:.9rem/1.5 ui-monospace,Consolas,monospace}
+        .code-expl la{color:#ffcc00;font-weight:bold}
+        footer{max-width:1180px;margin:0 auto;padding:0 1rem 2rem;color:var(--muted);font-size:.88rem;text-align:center}
+        @media(max-width:820px){.layout{grid-template-columns:1fr}nav{position:static}}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Bitácora de Aprendizaje · Semana 6</h1>
+        <p>Prohibir para Resolver: Pilas, Colas y la Magia del Montículo.</p>
+    </header>
+    <div class="layout">
+        <nav>
+            <h2>Contenido</h2>
+            <div class="navitems">
+                <a href="#conceptos">Conceptos (Feynman)</a>
+                <a href="#pila">La Pila (LIFO)</a>
+                <a href="#cola">La Cola Circular (FIFO)</a>
+                <a href="#monticulo">El Montículo (Priority)</a>
+                <a href="#desempate">El Dilema del Empate</a>
+            </div>
+        </nav>
+        <main>
+            <section id="conceptos">
+                <h2>1. La Idea Central: Restringir para Ganar</h2>
+                <p>Hasta ahora, nuestras estructuras eran "libres": podíamos meter y sacar datos de cualquier lado. Pero en la vida real, la libertad total es peligrosa. La Semana 6 nos enseña que <strong>poner reglas estrictas es lo que hace que un sistema sea confiable</strong>.</p>
+                <div class="feynman-box">
+                    <strong>La analogía de la ley:</strong> Imagina que en un hospital cualquiera puede entrar la gente por cualquier puerta y sentarse donde quiera. Sería un caos. Pero si pones una regla: "Solo se entra por la puerta A y se sale por la puerta B", acabas de crear una cola. No has quitado funcionalidad, has creado <strong>orden y garantía</strong>.
+                </div>
+            </section>
+
+            <section id="pila">
+                <h2>2. La Pila (LIFO) - El "Deshacer"</h2>
+                <p>Una pila es una estructura donde el último en llegar es el primero en salir. En el código, esto es la <code class="badge">PilaDeAcciones</code>.</p>
+                <div class="feynman-box">
+                    <strong>La analogía de los platos:</strong> Imagina una pila de platos sucios. Solo puedes poner uno nuevo arriba, y si quieres lavar uno, tienes que quitar el de arriba primero. No puedes sacar el plato del fondo sin tirar toda la torre. <br><br>
+                    Esto es perfecto para el <strong>Ctrl+Z</strong>: la última acción que hiciste es la primera que quieres borrar.
+                </div>
+                <h3>Explicación del código fuente:</h3>
+                <pre>
+public String desapilar() {
+    if (estaVacia()) return null;
+    String accion = acciones[tope - 1]; // 1. Tomamos la acción de la cima
+    acciones[tope - 1] = null;          // 2. Borramos la referencia (limpieza de memoria)
+    tope--;                             // 3. Bajamos la marca del tope
+    return accion;
+}</pre>
+                <p><strong>¿Por qué es así?</strong> Si solo hiciéramos <code class="badge">tope--</code>, el objeto seguiría existiendo en el arreglo aunque la pila diga que no está. Esto se llama "fuga de memoria". Al ponerlo en <code class="badge">null</code>, le decimos a Java que ese espacio ya puede ser reutilizado.</p>
+            </section>
+
+            <section id="cola">
+                <h2>3. La Cola Circular (FIFO) - El Buffer de Datos</h2>
+                <p>Una cola es el concepto opuesto: el primero que llega es el primero en salir. Usamos la <code class="badge">ColaDeIngesta</code> para recibir datos de los sensores.</p>
+                <div class="feynman-box">
+                    <strong>La analogía de la fila del banco:</strong> Nadie se cuela. El que llegó primero es el primero en ser atendido. <br><br>
+                    <strong>¿Por qué Circular?</strong> Imagina que la fila está en un pasillo. Cuando la gente sale por delante, queda espacio vacío. Si la fila sigue avanzando hacia el fondo, eventualmente chocarás con la pared aunque el principio esté vacío. La <strong>cola circular</strong> es como si el pasillo fuera un anillo: cuando llegas al final, vuelves a empezar por el principio, reciclando el espacio vacío.
+                </div>
+                <h3>Explicación del código fuente:</h3>
+                <pre>
+public boolean encolar(LecturaSensor lectura) {
+    if (cantidad == CAPACIDAD) return false; // Validamos por cantidad real, no por posición
+    buffer[fin] = lectura;
+    fin = (fin + 1) % CAPACIDAD; // El operador % hace que al llegar a 1000, vuelva a 0
+    cantidad++;
+    return true;
+}</pre>
+                <p><strong>La clave:</strong> Usar <code class="badge">cantidad</code> es vital. En una cola circular, el <code class="badge">frente</code> y el <code class="badge">fin</code> pueden quedar en la misma posición tanto cuando la cola está vacía como cuando está llena. Solo la variable <code class="badge">cantidad</code> nos dice la verdad.</p>
+            </section>
+
+            <section id="monticulo">
+                <h2>4. El Montículo (Priority Queue) - Urgencias</h2>
+                <p>A veces, el orden de llegada no importa, sino la <strong>importancia</strong>. Para esto usamos un montículo en la <code class="badge">ColaDeAlertas</code>.</p>
+                <div class="feynman-box">
+                    <strong>La analogía de la Sala de Urgencias:</strong> No importa si llegaste hace una hora; si alguien llega ahora con un infarto, esa persona pasa adelante de todos. <br><br>
+                    El Montículo es un arreglo que "finge" ser un árbol. No usa nodos ni enlaces complicados, solo matemáticas simples para saber quién es el "padre" y quién el "hijo". La regla es simple: <strong>El padre siempre es más urgente que sus hijos</strong>. Por lo tanto, la alerta más crítica siempre está en la cima (posición 0).
+                </div>
+                <h3>Explicación del código fuente:</h3>
+                <pre>
+private void flotar(int posicion) {
+    while (posicion > 0) {
+        int padre = (posicion - 1) / 2; // Aritmética para encontrar al padre
+        if (esMasUrgente(datos[posicion], datos[padre])) {
+            intercambiar(posicion, padre); // Sube la alerta si es más urgente
+            posicion = padre;
+        } else break;
+    }
+}</pre>
+                <p><strong>Lógica:</strong> Cuando llega una alerta nueva, la ponemos al final del arreglo y la hacemos "flotar" hacia arriba. Si es más urgente que su padre, intercambian lugares. Así, la alerta más crítica siempre "flota" hasta la posición 0.</p>
+            </section>
+
+            <section id="desempate">
+                <h2>5. El Dilema del Empate: Inestabilidad</h2>
+                <p>Descubrimos un problema: ¿Qué pasa si dos alertas son igualmente críticas?</p>
+                <div class="feynman-box">
+                    <strong>El incidente del hospital:</strong> Si tenemos tres alertas críticas (una zona escolar, una residencial y una hospitalaria), el montículo podría entregarlas en cualquier orden porque todas tienen la misma severidad. <br><br>
+                    Esto se llama <strong>inestabilidad</strong>. Para resolverlo, añadimos un segundo criterio: el <strong>orden de llegada</strong>. Si la severidad es igual, gana el que llegó primero. Ahora el sistema es justo y predecible.
+                </div>
+                <h3>Explicación del código fuente:</h3>
+                <pre>
+private boolean esMasUrgente(Alerta a, Alerta b) {
+    if (a.getSeveridad() != b.getSeveridad()) {
+        return a.getSeveridad() > b.getSeveridad();
+    }
+    // DESEMPATE: Si la severidad es igual, gana el que llego primero (menor ID)
+    return a.getOrdenDeLlegada() < b.getOrdenDeLlegada();
+}</pre>
+            </section>
+        </main>
+    </div>
+    <footer>
+        &copy; 2026 Proyecto de Monitoreo Ambiental Urbano - Explicado con el Método Feynman
+    </footer>
+</body>
+</html>
