@@ -1,4 +1,8 @@
+import generator.GeneradorDatos;
+import model.LecturaSensor;
 import org.junit.jupiter.api.Test;
+import sorting.Ordenador;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class OrdenadorTest {
