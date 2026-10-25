@@ -6,7 +6,10 @@ bin/
 out/
 target/
 build/
+
+# Carpetas personales
 guias/
+estudiantes/
 
 # Configuracion local de IDEs
 .idea/
